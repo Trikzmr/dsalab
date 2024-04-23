@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <xmp>
+        #include <stdbool.h>
+            #include <stdio.h>
+            
+            #define V 4 // Number of vertices in the graph
+            
+            //void printSolution(int color[]);
+            void printSolution(int color[]) {
+                printf("Solution Exists:\n");
+                printf("Vertex\tColor\n");
+                for (int i = 0; i < V; i++)
+                    printf("%d\t%d\n", i, color[i]);
+            }
+            
+            bool isSafe(int v, bool graph[V][V], int color[], int c) {
+                //c:Color to be assigned to each vertex
+                //v:Vertex for which we are checking safety
+                //color:Array storing the colors assigned to each vertex
+                //graph[V][V]:Adjacency matrix representing the graph
+                for (int i = 0; i < V; i++)
+                    if (graph[v][i] && c == color[i])//graph[v][i]==1
+                        return false;
+                return true;
+            }
+            
+            bool graphColoringUtil(bool graph[V][V], int m, int color[], int v) {
+                if (v == V)//if v reaches the total no of vertex V means all vertex are successfully color so return true
+                    return true;
+                //m:no of colors avalible
+                //Otherwise
+                for (int c = 1; c <= m; c++) {
+                    if (isSafe(v, graph, color, c)) {
+                        color[v] = c;
+                        if (graphColoringUtil(graph, m, color, v + 1))//For each color,it checks if it is safe to assign that color to vertex v 
+                            return true;
+                        color[v] = 0;//if no valid color is found,it backtrack by resetting the color of vertex v to 0 and tries the next color
+                    }
+                }
+            
+                return false;//if all color have been tried for vertex v and no valid coloring is found,it returns false 
+            }
+            
+            bool graphColoring(bool graph[V][V], int m) {
+                int color[V];//it store the colors assigned to each vertex v.
+                for (int i = 0; i < V; i++)
+                    color[i] = 0;
+            
+                if (!graphColoringUtil(graph, m, color, 0)) {
+                    printf("Solution does not exist");
+                    return false;
+                }
+            
+                printSolution(color);
+                return true;
+            }
+            
+            
+            int main() {
+                bool graph[V][V] = {
+                    {0, 1, 1, 1},
+                    {1, 0, 1, 0},
+                    {1, 1, 0, 1},
+                    {1, 0, 1, 0}
+                };
+                int m; // Number of colors
+                printf("Enter the no of colour:");
+                scanf("%d",&m);
+                graphColoring(graph, m);
+                return 0;
+            }
+
+
+
+            // Online C compiler to run C program online
+            #include <stdio.h>
+            
+            #define N 4
+            
+            int a = 0;
+            int b = 0;
+            
+            int moveleft(int i, int j, int arr[][N]) {
+                if (j != 0) {
+                    return arr[i][j - 1];
+                }
+                return -1; // Indicate invalid move
+            }
+            
+            int moveright(int i, int j, int arr[][N]) {
+                if (j != N - 1) {
+                    return arr[i][j + 1];
+                }
+                return -1; // Indicate invalid move
+            }
+            
+            int moveup(int i, int j, int arr[][N]) {
+                if (i != 0) {
+                    return arr[i - 1][j];
+                }
+                return -1; // Indicate invalid move
+            }
+            
+            int movedown(int i, int j, int arr[][N]) {
+                if (i != N - 1) {
+                    return arr[i + 1][j];
+                }
+                return -1; // Indicate invalid move
+            }
+            
+            void swap(int *a, int *b) {
+                int t = *a;
+                *a = *b;
+                *b = t;
+            }
+            
+            void findspace(int arr[][N]) {
+                for (int i = 0; i < N; i++) {
+                    for (int j = 0; j < N; j++) {
+                        if (arr[i][j] == 0) {
+                            a = i;
+                            b = j;
+                            return; // Once space is found, return to exit the loop
+                        }
+                    }
+                }
+            }
+            
+            void display(int arr[][N]) {
+                for (int i = 0; i < N; i++) {
+                    for (int j = 0; j < N; j++) {
+                        printf("%d ", arr[i][j]);
+                    }
+                    printf("\n");
+                }
+            }
+            
+            int calculate(int arr[][N]) {
+                int c = 1;
+                for (int i = 0; i < N; i++) {
+                    for (int j = 0; j < N; j++) {
+                        if ((arr[i][j] != c)&&(arr[i][j]!=0)) {
+                            findspace(arr);
+                            if ((i == a) && (j>b)) {
+                                int g = moveright(a, b, arr);
+                                if (g != -1) {
+                                    swap(&arr[a][b], &arr[a][b + 1]);
+                                    b++;
+                                    return 0; // Puzzle not solved yet
+                                }
+                            }
+                            if ((i == a) && (j<b)) {
+                                int g = moveleft(a, b, arr);
+                                if (g != -1) {
+                                    swap(&arr[a][b], &arr[a][b - 1]);
+                                    b--;
+                                    return 0; // Puzzle not solved yet
+                                }
+                            }
+                            if ((j == b) && (i > a)) {
+                                int g = movedown(a, b, arr);
+                                if (g != -1) {
+                                    swap(&arr[a][b], &arr[a + 1][b]);
+                                    a++;
+                                    return 0; // Puzzle not solved yet
+                                }
+                            }
+                            if ((j == b) && (i < a)) {
+                                int g = moveup(a, b, arr);
+                                if (g != -1) {
+                                    swap(&arr[a][b], &arr[a - 1][b]);
+                                    a--;
+                                    return 0; // Puzzle not solved yet
+                                }
+                            }
+                        }
+                        c++;
+                    }
+                }
+                return 1; // Puzzle is solved
+            }
+            
+            int main() {
+                int arr[N][N] = {{1, 2, 3, 4},
+                                 {5, 6, 0, 8},
+                                 {9, 10, 7, 11},
+                                 {13, 14, 15, 12}};
+                                /* int arr[N][N] = {{1, 2, 3, 4},
+                                 {5, 6, 7, 8},
+                                 {9, 10, 0, 11},
+                                 {13, 14, 15, 12}};*/
+                printf("Original Board:\n");
+                display(arr);
+                printf("\n\nAfter moving:\n");
+                while (!calculate(arr)) {
+                    display(arr);
+                    printf("\n\n");
+                }
+                return 0;
+            }
+
+
+    </xmp>
+</body>
+</html>
